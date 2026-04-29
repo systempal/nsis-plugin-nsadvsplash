@@ -1,0 +1,82 @@
+{{PageAuthor|Takhir}}
+
+== Links ==
+Download:<br>
+<attach>NewAdvSplash.zip</attach><br>
+[http://forums.winamp.com/showthread.php?s=&threadid=197479 Forum thread]
+
+== Description ==
+
+NewAdvSplash.dll - startup image banner plug-in with fading effects (win2k/xp) and transparency. At the same time can play sound file. On the base of AdvSplash NSIS plug-in with following add-ons: allows background installer initialization (async-banner mode); plays mp3 files; gif, jpeg and some other OleLoadPicture() formats; "passive" mode - not forces spalsh window to foreground; can return splash HWND to work with other plug-ins (Marquee, AnimGif) in the async mode.
+Compatibility: basic - Win95 and later, fadein/fadeout - win2k/winxp.
+
+== Installing ==
+
+Unzip and place the .dll file into the Plugins directory.
+
+== Entry points and parameters (NSIS script) ==
+
+ newadvsplash::show [/NOUNLOAD] Delay FadeIn FadeOut KeyColor [/BANNER] [/PASSIVE] [/NOCANCEL] FileName
+
+; Delay
+: time (milliseconds) to show image
+
+; FadeIn
+: time to show the fadein scene
+
+; FadeOut
+: time to show the fadeout scene
+
+; KeyColor
+: color used for transparency, could be any RGB value (for ex. R=255 G=100 B=16 -> KeyColor=0xFF6410), use KeyColor=-1 if there is no transparent color at your image. If KeyColor=-2 and image type is gif, plug-in attempts to extract transparency color value from the file header. For gif images transparency on the static background works even if KeyColor=-1.
+
+; /BANNER
+: returns control to installer immediatelly after plug-in activation.
+
+; /NOCANCEL
+: disables 'exit on user click' default behaviour.
+
+; /PASSIVE
+: not forces spalsh window to foreground
+
+; FileName
+: splash image filename (with extension!). Bmp, gif and jpg image types supported.
+
+
+ newadvsplash::stop [/WAIT | /FADEOUT]
+
+: For /BANNER mode only! Without options terminates banner.
+: With /WAIT option waits for the end.
+: With /FADEOUT option forces banner close with fade out effect ('Delay' -> 0).
+
+
+ newadvsplash::play /NOUNLOAD [/LOOP] FileName
+
+; FileName
+: sound filename to play (with extension, wav, mp3 ...). Empty Filename string "" stops playing ('show' end does this as well).
+
+; /LOOP
+: loops sound.
+
+
+ newadvsplash::hwnd
+
+: Gets splash window handle (use Pop to take it from stack)
+
+== Examples ==
+'Modeless' logo with sound
+<highlight-nsis>
+     newadvsplash::play /NOUNLOAD /LOOP "$PLUGINSDIR\snd.mp3"
+     newadvsplash::show /NOUNLOAD 2000 1000 500 -2 /BANNER "$PLUGINSDIR\logo.gif"
+     ; add your initialization code here
+     newadvsplash::stop /WAIT
+</highlight-nsis>
+
+Simple logo
+<highlight-nsis>
+     newadvsplash::show 2000 1000 500 -1 "$PLUGINSDIR\logo.jpg"
+</highlight-nsis>
+
+No return value.
+
+[[Category:Plugins]]
